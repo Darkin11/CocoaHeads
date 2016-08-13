@@ -18,19 +18,18 @@ class GroupManager(Base):
 	isadmin = Column(Boolean, nullable=False)
 	email = Column(String, nullable=False)
 	password = Column(String, nullable=False)
-	group_id = Column(Integer, ForeignKey('group.id'))
 
 class Group(Base):
 	__tablename__ = 'group'
  
 	id = Column(Integer, primary_key=True)
 	intro = Column(String, nullable=False)
-	cityid = Column(Integer, nullable=False)
-	managerid = Column(Integer, nullable=False)
+	cityid = Column(Integer, ForeignKey('city.id'), nullable=False)
+	city = relationship('City', backref='group')
+	managerid = Column(Integer, ForeignKey('groupmanager.id'), nullable=False)
 	enabled = Column(Boolean, default=True)
-	city = relationship("City", uselist=False, back_populates="group")
 	groupmanager = relationship("GroupManager", backref="group")
-	events = relationship("Event")
+	events = relationship("Event", backref="group")
 
 class City(Base):
 	__tablename__ = 'city'
@@ -38,18 +37,14 @@ class City(Base):
 	id = Column(Integer, primary_key=True)
 	name = Column(String, nullable=False)
 	timezonename = Column(String, nullable=False)
-	#is character(2) the same as String(2)?
-	countryid = Column(String(2), nullable=False)
-	country_id = Column(Integer, ForeignKey('country.id'))
-	group_id = Column(Integer, ForeignKey('group.id'))
-	group = relationship("Group", backref="city")
+	countryid = Column(String(2), ForeignKey('country.isocode'), nullable=False)
+	country = relationship('Country', backref='city')
 
 class Country(Base):
 	__tablename__ = 'country'
 
 	isocode = Column(String(2), nullable=False, primary_key=True)
 	name = Column(String, nullable= False)
-	cities = relationship("City", backref="country")
 
 class Event(Base):
 	__tablename__ = 'event'

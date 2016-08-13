@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, MetaData, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, MetaData, ForeignKey, DateTime, Float
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship
 
@@ -19,11 +19,6 @@ class GroupManager(Base):
 	email = Column(String, nullable=False)
 	password = Column(String, nullable=False)
 	group_id = Column(Integer, ForeignKey('group.id'))
-	group = relationship("Group", back_populates="groupmanager")
-
-for gm in session.query(GroupManager).filter(GroupManager.realname.like('%John%')):
-	print gm.realname
-
 
 class Group(Base):
 	__tablename__ = 'group'
@@ -34,7 +29,7 @@ class Group(Base):
 	managerid = Column(Integer, nullable=False)
 	enabled = Column(Boolean, default=True)
 	city = relationship("City", uselist=False, back_populates="group")
-	groupmanager = relationship("GroupManager", uselist=False, back_populates="group")
+	groupmanager = relationship("GroupManager", backref="group")
 	events = relationship("Event")
 
 class City(Base):
@@ -47,14 +42,14 @@ class City(Base):
 	countryid = Column(String(2), nullable=False)
 	country_id = Column(Integer, ForeignKey('country.id'))
 	group_id = Column(Integer, ForeignKey('group.id'))
-	group = relationship("Group", back_populates="city")
+	group = relationship("Group", backref="city")
 
 class Country(Base):
 	__tablename__ = 'country'
 
 	isocode = Column(String(2), nullable=False, primary_key=True)
 	name = Column(String, nullable= False)
-	cities = relationship("City")
+	cities = relationship("City", backref="country")
 
 class Event(Base):
 	__tablename__ = 'event'
@@ -70,3 +65,9 @@ class Event(Base):
 	longitude = Column(Float, nullable=False, default=0)
 	latitude = Column(Float, nullable=False, default=0)
 	group_id = Column(Integer, ForeignKey('group.id'))
+
+
+for gm in session.query(GroupManager).filter(GroupManager.realname.like('%John%')):
+	print gm.realname
+
+

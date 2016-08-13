@@ -52,7 +52,7 @@ class City(Base):
 class Country(Base):
 	__tablename__ = 'country'
 
-	isocode = Column(String(2), nullable=False)
+	isocode = Column(String(2), nullable=False, primary_key=True)
 	name = Column(String, nullable= False)
 	cities = relationship("City")
 

@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, MetaData
+from sqlalchemy import Column, Integer, String, Boolean, MetaData, ForeignKey
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import relationship
 
 engine = create_engine('postgresql+psycopg2://agentm:x@localhost/cocoaheads')
 Session = sessionmaker(bind=engine)
@@ -17,6 +18,8 @@ class GroupManager(Base):
 	isadmin = Column(Boolean, nullable=False)
 	email = Column(String, nullable=False)
 	password = Column(String, nullable=False)
+	group_id = Column(Integer, ForeignKey('group.id'))
+	group = relationship("Group", back_populates="groupmanager")
 
 for gm in session.query(GroupManager).filter(GroupManager.realname.like('%John%')):
 	print gm.realname
@@ -27,9 +30,12 @@ class Group(Base):
  
 	id = Column(Integer, primary_key=True)
 	intro = Column(String, nullable=False)
-	cityid = Column(Integer, primary_key=True)
-	managerid = Column(Integer, primary_key=True)
+	cityid = Column(Integer, nullable=False)
+	managerid = Column(Integer, nullable=False)
 	enabled = Column(Boolean, default=True)
+	city = relationship("City", uselist=False, back_populates="group")
+	groupmanager = relationship("GroupManager", uselist=False, back_populates="group")
+	events = relationship("Event")
 
 class City(Base):
 	__tablename__ = 'city'
@@ -39,19 +45,22 @@ class City(Base):
 	timezonename = Column(String, nullable=False)
 	#is character(2) the same as String(2)?
 	countryid = Column(String(2), nullable=False)
+	country_id = Column(Integer, ForeignKey('country.id'))
+	group_id = Column(Integer, ForeignKey('group.id'))
+	group = relationship("Group", back_populates="city")
 
 class Country(Base):
 	__tablename__ = 'country'
 
 	isocode = Column(String(2), nullable=False)
 	name = Column(String, nullable= False)
-
+	cities = relationship("City")
 
 class Event(Base):
 	__tablename__ = 'event'
 
 	id = Column(Integer, primary_key=True)
-	groupid = Column(Integer, primary_key=True)
+	groupid = Column(Integer, nullable=False)
 	#got rid of "" around location
 	location = Column(String, nullable=False)
 	locationdetails = Column(String, nullable=False)
@@ -60,4 +69,4 @@ class Event(Base):
 	#double? can I use Float?
 	longitude = Column(Float, nullable=False, default=0)
 	latitude = Column(Float, nullable=False, default=0)
-
+	group_id = Column(Integer, ForeignKey('group.id'))

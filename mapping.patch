@@ -1,0 +1,20 @@
+diff --git a/mapping.py b/mapping.py
+index 0791d63..7ffdefa 100644
+--- a/mapping.py
++++ b/mapping.py
+@@ -1,6 +1,6 @@
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+-from sqlalchemy import Column, Integer, String, Boolean, MetaData
++from sqlalchemy import Column, Integer, String, Boolean, MetaData, DateTime, Float
+from sqlalchemy.orm import sessionmaker
+
+engine =
+create_engine('postgresql+psycopg2://agentm:x@localhost/cocoaheads')
+@@ -43,7 +43,7 @@ class City(Base):
+class Country(Base):
+__tablename__ = 'country'
+
+- isocode = Column(String(2), nullable=False)
++ isocode = Column(String(2), nullable=False, primary_key=True)
+name = Column(String, nullable= False)

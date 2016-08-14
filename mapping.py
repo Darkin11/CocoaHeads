@@ -62,7 +62,10 @@ class Event(Base):
 	group_id = Column(Integer, ForeignKey('group.id'))
 
 
-for gm in session.query(GroupManager).filter(GroupManager.realname.like('%John%')):
-	print gm.realname
+#for gm in session.query(GroupManager).filter(GroupManager.realname.like('%John%')):
+#	print gm.realname
 
-
+for gm, group, city in session.query(GroupManager.realname, Group.intro, City.name).\
+	filter(GroupManager.id==Group.managerid).\
+	filter(Group.cityid==City.id):
+	print (gm, city)

@@ -2,7 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean, MetaData, ForeignKey, DateTime, Float
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.dialects import postgresql
+import logging
+
+#this part enables SQL logging to the console- comment it out to disable
+logging.basicConfig(level=logging.INFO)
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 engine = create_engine('postgresql+psycopg2://agentm:x@localhost/cocoaheads')
 Session = sessionmaker(bind=engine)
@@ -25,10 +31,10 @@ class Group(Base):
 	id = Column(Integer, primary_key=True)
 	intro = Column(String, nullable=False)
 	cityid = Column(Integer, ForeignKey('city.id'), nullable=False)
-	city = relationship('City', backref='group')
+	city = relationship('City', backref=backref('group', uselist=False))
 	managerid = Column(Integer, ForeignKey('groupmanager.id'), nullable=False)
 	enabled = Column(Boolean, default=True)
-	groupmanager = relationship("GroupManager", backref="group")
+	groupmanager = relationship("GroupManager", backref=backref("group", uselist=False))
 	events = relationship("Event", backref="group")
 
 class City(Base):
@@ -61,11 +67,23 @@ class Event(Base):
 	latitude = Column(Float, nullable=False, default=0)
 	group_id = Column(Integer, ForeignKey('group.id'))
 
+#print a query without executing it
+def print_sql(query):
+	print str(query.statement.compile(dialect=postgresql.dialect()))
 
 #for gm in session.query(GroupManager).filter(GroupManager.realname.like('%John%')):
 #	print gm.realname
 
-for gm, group, city in session.query(GroupManager.realname, Group.intro, City.name).\
+q = session.query(GroupManager.realname, Group.intro, City.name).\
 	filter(GroupManager.id==Group.managerid).\
-	filter(Group.cityid==City.id):
-	print (gm, city)
+	filter(Group.cityid==City.id)
+
+for gm, group, city in q:
+	print gm + ",", city
+
+# this second variant is far less efficient than the first- examine the logging to determine why
+q = session.query(GroupManager).join(Group).join(City)
+
+for gm in q:
+	print gm.realname + ",", gm.group.city.name
+

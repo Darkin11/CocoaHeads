@@ -73,7 +73,7 @@ app = Flask('myapp', template_folder=".")
 @app.route("/")
 def GM_list():
     q = session.query(GroupManager)
-    return render_template("groupmanager_test.html", GroupManagers=q)
+    return render_template("groupmanager.html", GroupManagers=q)
 
 if __name__ == "__main__":
     app.run()

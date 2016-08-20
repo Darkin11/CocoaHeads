@@ -1,0 +1,28 @@
+<!doctype html>
+<title>GroupManager</title>
+<body> 
+<h1>Group Manager</h1>
+<table><tr><th>Name</th></tr>
+ {% for manager in GroupManagers %}
+    <tr><td> {{ manager.realname }}</td></tr>
+  {% endfor %}
+
+</table>
+
+<h2>Add Group Manager</h2>
+<form>
+	Username:<br>
+	<input type="text" name="username"><br>
+	First name:<br>
+	<input type="text" name="firstname"><br>
+	Last name:<br>
+	<input type="text" name="lastname"><br>
+	Is admin:<br>
+	<input type="radio" name="admin" value="Yes" checked> Yes<br>
+	<input type="radio" name="admin" value="No"> No<br>
+	E-mail Address<br>
+	<input type="text" name="email"><br>
+	Password
+	<input type="test" name="password">
+</form>
+</body>

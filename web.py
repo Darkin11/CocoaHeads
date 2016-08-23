@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects import postgresql
 import logging
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 #this part enables SQL logging to the console- comment it out to disable
 #logging.basicConfig(level=logging.INFO)

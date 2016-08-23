@@ -74,6 +74,19 @@ app = Flask('myapp', template_folder=".")
 def GM_list():
     q = session.query(GroupManager)
     return render_template("groupmanager.html", GroupManagers=q)
+    
+@app.route("/manager", methods = ['POST', 'GET'])
+def new_GM():
+	if request.method == 'POST':
+		username = request.form['username']
+		realname = request.form['realname']
+		isadmin = request.form['isadmin']
+		email = request.form['email']
+		password = request.form['password']
+	newManager = GroupManager(realname=realname, username=username, isadmin=isadmin, email= email, password= password)
+	session.add(newManager)
+	session.commit()
+	return render_template("groupmanager.html")
 
 if __name__ == "__main__":
     app.run()

@@ -75,7 +75,7 @@ def GM_list():
     q = session.query(GroupManager)
     return render_template("groupmanager.html", GroupManagers=q)
     
-@app.route("/manager", methods = ['POST', 'GET'])
+@app.route("/", methods = ['POST', 'GET'])
 def new_GM():
 	if request.method == 'POST':
 		username = request.form['username']

@@ -86,7 +86,7 @@ def new_GM():
 	newManager = GroupManager(realname=realname, username=username, isadmin=isadmin, email= email, password= password)
 	session.add(newManager)
 	session.commit()
-	return render_template("groupmanager.html")
+	return GM_list()
 
 if __name__ == "__main__":
     app.run()
